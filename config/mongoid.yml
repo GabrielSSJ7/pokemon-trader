@@ -1,0 +1,24 @@
+development:
+  clients:
+    default:
+      database: pokemon-db
+      hosts:
+        - localhost:27016
+      options:
+        user: 'pokemon-db'
+        password: 'q1w2e3r4'
+        auth_source: admin
+        read:
+          mode: primary
+test:
+  clients:
+    default:
+      database: pokemon-db-test
+      hosts:
+        - localhost:27016
+      options:
+        user: 'pokemon-db'
+        password: 'q1w2e3r4'
+        read:
+          mode: :primary
+        max_pool_size: 1

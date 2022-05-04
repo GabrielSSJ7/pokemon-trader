@@ -1,0 +1,32 @@
+version: '2'
+services:
+  pokemon-mongo:
+    image: mongo
+    # restart: always
+    container_name: pokemon-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: pokemon-db
+      MONGO_INITDB_ROOT_PASSWORD: q1w2e3r4
+    volumes:
+      - /var/mongo/api:/data/db2
+    ports:
+      - "27016:27017"
+    expose:
+      - "27016"
+    networks:
+      - default
+  api:
+    build: .
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/pokemon
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
+    depends_on:
+      - pokemon-mongo
+
