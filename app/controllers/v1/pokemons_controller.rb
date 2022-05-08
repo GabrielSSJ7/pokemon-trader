@@ -4,15 +4,15 @@ class V1::PokemonsController < ApplicationController
   before_action :authorize_request, except: [:index, :show]
 
   def index
-    @pokemons = Pokemon::Find.list_pokemon(
-      limit: params[:limit],
-      offset: params[:offset]
+    @pokemons = Pokemon::List.call(
+      params[:limit],
+      params[:offset]
     )
     render json: @pokemons
   end
 
   def show
-    @pokemon = Pokemon::Find.get_pokemon(params[:id])
+    @pokemon = Pokemon::Find.call(params[:id])
     render json: @pokemon
   end
 

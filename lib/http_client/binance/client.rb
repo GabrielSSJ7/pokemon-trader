@@ -1,7 +1,10 @@
 class HttpClient::Binance::Client < HttpClient::Base
   class << self
-    def get_candles(symbol = "BTCUSDT", interval = "1d", limit = 7)
-      get(url("?symbol=#{symbol}&interval=#{interval}&limit=#{limit}"))
+    include ::BinanceHelper
+
+    def get_candles(symbol:, interval:, limit:)
+      candles = get(url("?symbol=#{symbol}&interval=#{interval}&limit=#{limit}"))
+      translate_candles(candles[:body])
     end
 
     private

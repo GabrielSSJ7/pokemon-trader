@@ -1,8 +1,13 @@
 class Pokemon::Find
+  include ::PokemonHelper
 
-  def self.get_pokemon(id)
+  def initialize(id)
+    @id = id
+  end
+
+  def call
     pokemon = Pokemon.collection.aggregate([
-      { "$match" => { "poke_id" => id } },
+      { "$match" => { "poke_id" => @id } },
       {'$lookup' => {
         from: 'users',
         localField: 'user_id',
@@ -25,19 +30,13 @@ class Pokemon::Find
     ]).first
 
     if pokemon.blank?
-      pokemon = HttpClient::Pokemon::Client.get_pokemon(id)[:body]
+      pokemon = HttpClient::Pokemon::Client.get_pokemon(@id)[:body]
     end
 
     pokemon
   end
 
-  def self.list_pokemon(limit:, offset:)
-    pokemon =  HttpClient::Pokemon::Client.list_pokemon(
-                limit: limit, 
-                offset: offset || "0"
-               )
-    pokemon[:body]
+  def self.call(id)
+    new(id).call
   end
-
-
 end

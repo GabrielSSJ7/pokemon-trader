@@ -1,5 +1,5 @@
-class BinanceHelper
-  def self.translate_candles(candles)
+module BinanceHelper
+  def translate_candles(candles)
     candles.map do |candle| 
       {
         time: candle[0],

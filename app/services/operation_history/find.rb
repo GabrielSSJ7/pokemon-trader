@@ -30,7 +30,8 @@ class OperationHistory::Find
             name: { '$arrayElemAt': ['$pokemon_array.name', 0] },
             base_xp: { '$arrayElemAt': ['$pokemon_array.base_xp', 0] },
             price: { '$arrayElemAt': ['$pokemon_array.price', 0] },
-            picture: { '$arrayElemAt': ['$pokemon_array.picture', 0] }
+            picture: { '$arrayElemAt': ['$pokemon_array.picture', 0] },
+            btc_buy: { '$arrayElemAt': ['$pokemon_array.btc_buy', 0] },
           },
           'user': {
             name: { '$arrayElemAt': ['$user_array.name', 0] },

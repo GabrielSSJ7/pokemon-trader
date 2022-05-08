@@ -5,6 +5,7 @@ class Pokemon
   field :name, type: String
   field :base_xp, type: Integer
   field :price, type: String
+  field :btc_buy_price, type: String
   field :picture, type: String
   field :open_to_sell, type: Boolean, default: true
 
