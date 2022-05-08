@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   namespace :v1 do
     namespace :auth do
       post 'login', to: 'authentication#login'
+      get 'verify', to: 'authentication#verify'
     end
 
     namespace :users do

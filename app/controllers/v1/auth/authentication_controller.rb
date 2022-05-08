@@ -1,6 +1,8 @@
 class V1::Auth::AuthenticationController < ApplicationController
   include ::ApplicationHelper
 
+  before_action :authorize_request, only: [:verify]
+
   def login
     @user = User.where(username: params[:username]).first
     if @user&.authenticate(params[:password])
@@ -9,6 +11,10 @@ class V1::Auth::AuthenticationController < ApplicationController
     else
       render json: { error: 'unauthorized' }, status: :unauthorized
     end
+  end
+
+  def verify
+    render json: { success: true }
   end
 
   private
