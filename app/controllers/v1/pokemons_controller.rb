@@ -24,4 +24,13 @@ class V1::PokemonsController < ApplicationController
       render json: @result
     end
   end
+
+  def toggle
+    @result = Pokemon::Toggle.call(params[:id], @current_user, params[:type])
+    if @result[:error].present?
+      render json: @result, status: :bad_request
+    else
+      render json: @result
+    end
+  end
 end

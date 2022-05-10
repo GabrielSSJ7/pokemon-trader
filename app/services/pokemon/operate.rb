@@ -10,7 +10,7 @@ class Pokemon::Operate
   def call
     pokemon = Pokemon.where(poke_id: @poke_id).first || Pokemon::Find.call(@poke_id)
     if !pokemon[:user].present?
-      pokemon = Pokemon.create!(
+      pokemon = Pokemon.create(
         poke_id: @poke_id,
         user: @user,
         name: pokemon[:name],

@@ -19,8 +19,9 @@ class Wallet::Find
       }
     ]).first
 
+    return {:total=>0,:count=>0,:amount=>0,:diff=>0} if result.nil?
+    
     result[:total] = "%.8f" % (result[:total] / 100000000)
-
     candles = HttpClient::Binance::Client
                                     .get_candles(
                                       symbol: 'BTCUSDT', 

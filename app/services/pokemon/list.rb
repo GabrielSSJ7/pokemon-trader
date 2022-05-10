@@ -15,7 +15,19 @@ class Pokemon::List
     pokemons = fetch_all_pokemons(pokemon_api[:body][:results])
     pokemons = concat_pokemons_owners(pokemons)
     pokemons = pokemon_valuation(pokemons)
-    pokemons
+
+    result = {
+      :next => { 
+        :offset => get_url_param(pokemon_api[:body][:next], "offset"),
+        :limit => get_url_param(pokemon_api[:body][:next], "limit")
+      },
+      :previous => { 
+        :offset => get_url_param(pokemon_api[:body][:previous], "offset"),
+        :limit => get_url_param(pokemon_api[:body][:previous], "limit")
+      },
+      :results => pokemons
+    }
+    result
   end
 
   def self.call(limit, offset)
@@ -23,6 +35,13 @@ class Pokemon::List
   end
 
   private
+
+  def get_url_param(url, param)
+    return unless url.present?
+    uri = URI(url)
+    query_parsed = CGI::parse(uri.query)
+    query_parsed[param].first
+  end
 
   def fetch_all_pokemons(pokemon_api)
     pokemons = []
@@ -39,7 +58,8 @@ class Pokemon::List
       base_xp: pokemon[:base_experience],
       picture: pokemon[:sprites][:other][:dream_world][:front_default],
       poke_id: pokemon[:id].to_s,
-      price: pokemon_price(pokemon[:base_experience])
+      price: pokemon_price(pokemon[:base_experience]),
+      open_to_sell: pokemon[:open_to_sell].blank? ? true : pokemon[:open_to_sell],
     }
   end
 
@@ -85,21 +105,24 @@ class Pokemon::List
 
   def pokemon_valuation(pokemons)
     result = []
-    candle = HttpClient::Binance::Client.get_candles(
+    candles = HttpClient::Binance::Client.get_candles(
       symbol: "BTCUSDT",
       interval: "1d",
-      limit: 1
-    ).first
+      limit: 2
+    )
     
     pokemons.each do |pokemon|
       if pokemon[:btc_buy_price].present?
-        xy = candle[:close].to_f - pokemon[:btc_buy_price].to_f         
-        xy2 = pokemon[:btc_buy_price].to_f + candle[:close].to_f / 2
-
-        puts "buy: #{pokemon[:btc_buy_price]} - candle close: #{candle[:close]}"
-
+        xy = candles[0][:close].to_f - pokemon[:btc_buy_price].to_f         
+        xy2 = pokemon[:btc_buy_price].to_f + candles[0][:close].to_f / 2
+        pokemon[:valuation] = (xy / xy2) * 100
+      else
+        xy = candles[1][:close].to_f - candles[0][:close].to_f
+        xy2 = candles[0][:close].to_f + candles[1][:close].to_f / 2
         pokemon[:valuation] = (xy / xy2) * 100
       end
+
+      pokemon[:usd] = pokemon[:price].to_f * candles[0][:close].to_f
       result << pokemon
     end
     result
